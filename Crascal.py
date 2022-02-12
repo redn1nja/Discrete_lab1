@@ -45,30 +45,35 @@ def crascal(graph):
     edges = sorted(edges, key=lambda x: x[1])
     ver=[tuple(i[0]) for i in edges]
     # print(ver)
-    
+    print(edges)
 
     tree=[edges[0][0]]  
     edges.pop(0)
     # print(edges)
-    while len(list_of_sets)!=1:
+    for _ in range(4):
         for k in range(len(ver)):
             tree.append(ver[k])
+            l=list_of_sets.count(set())
+            l_copy=list_of_sets.count(set())
             for i in range(len(list_of_sets)):
-                try:
-                    if tree[-1][0] in list_of_sets[i] and tree[-1][1] not in list_of_sets[i]:
-                        list_of_sets[i].add(tree[-1][1])
-                        for j in range(len(list_of_sets)):
-                            if tree[-1][1] in list_of_sets[j] and i!=j:
-                                list_of_sets.pop(j)
-                                # print(list_of_sets)
-                                # print(ver[k])
-                    else:
-                        tree.remove(ver[k])
-                except:
-                    break
+                # try:
+                if tree[-1][0] in list_of_sets[i] and tree[-1][1] not in list_of_sets[i]:
+                    for j in range(len(list_of_sets)):
+                        if tree[-1][1] in list_of_sets[j] and i!=j:
+                            list_of_sets[i]=list_of_sets[i].union(list_of_sets[j])
+                            list_of_sets[j]=set()
+                            l=list_of_sets.count(set())
+                            # print(list_of_sets)
+                            # print(ver[k])
+                    
+                # except:
+                #     break
+            if l==l_copy:
+                tree.pop(-1)
                     
 
     print(list_of_sets)
+    tree.pop(0)
 
 
 
@@ -78,4 +83,4 @@ def crascal(graph):
     
 
 
-print(crascal(gnp_random_connected_graph(5,1)))
+print(crascal(gnp_random_connected_graph(7,0.5)))
