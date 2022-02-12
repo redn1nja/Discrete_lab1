@@ -1,6 +1,8 @@
 import random
 import networkx as nx
 from itertools import combinations, groupby
+from tqdm import tqdm
+import time
 
 
 def gnp_random_connected_graph(num_of_nodes: int,
@@ -41,11 +43,11 @@ def crascal(graph):
     list_of_sets=[]
     for item in set_of_vertex:
         list_of_sets.append({item})
-    print(list_of_sets)
+    # print(list_of_sets)
     edges = sorted(edges, key=lambda x: x[1])
     ver=[tuple(i[0]) for i in edges]
     # print(ver)
-    print(edges)
+    # print(edges)
 
     tree=[edges[0][0]]  
     edges.pop(0)
@@ -72,7 +74,7 @@ def crascal(graph):
                 tree.pop(-1)
                     
 
-    print(list_of_sets)
+    # print(list_of_sets)
     tree.pop(0)
 
 
@@ -80,7 +82,16 @@ def crascal(graph):
     # print(list_of_sets)
     return tree
 
-    
 
 
-print(crascal(gnp_random_connected_graph(7,0.5)))
+if __name__ == "__main__":
+    time_taken=0
+    for i in tqdm(range(10)):
+        start = time.time()
+        crascal(gnp_random_connected_graph(100,0.5))
+        end = time.time()
+        time_taken+=(end-start)
+
+    print(time_taken)
+
+# print(crascal(gnp_random_connected_graph(7,0.5)))
