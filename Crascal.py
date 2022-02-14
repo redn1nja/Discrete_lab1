@@ -15,83 +15,71 @@ def gnp_random_connected_graph(num_of_nodes: int,
     edges = combinations(range(num_of_nodes), 2)
     G = nx.Graph()
     G.add_nodes_from(range(num_of_nodes))
-    
-    for _, node_edges in groupby(edges, key = lambda x: x[0]):
+
+    for _, node_edges in groupby(edges, key=lambda x: x[0]):
         node_edges = list(node_edges)
         random_edge = random.choice(node_edges)
         G.add_edge(*random_edge)
         for e in node_edges:
             if random.random() < completeness:
                 G.add_edge(*e)
-                
-    for (u,v,w) in G.edges(data=True):
-        w['weight'] = random.randint(0,10)
+
+    for (u, v, w) in G.edges(data=True):
+        w['weight'] = random.randint(0, 10)
         weight.append(w['weight'])
-        
+
     return G, weight
 
+
 def crascal(graph):
-    vertexes=graph[0]
-    weights=graph[1]
+    vertexes = graph[0]
+    weights = graph[1]
     edges = list(vertexes.edges())
     for i in range(len(edges)):
-        edges[i]=[edges[i], weights[i]]    
-    set_of_vertex=set()
+        edges[i] = [edges[i], weights[i]]
+    set_of_vertex = set()
     for item in edges:
         for number in item[0]:
             set_of_vertex.add(number)
-    list_of_sets=[]
+    list_of_sets = []
     for item in set_of_vertex:
         list_of_sets.append({item})
-    # print(list_of_sets)
     edges = sorted(edges, key=lambda x: x[1])
-    ver=[tuple(i[0]) for i in edges]
-    # print(ver)
-    # print(edges)
-
-    tree=[edges[0][0]]  
+    ver = {tuple(i[0]) for i in edges}
+    # new_set=set()
+    tree = [edges[0][0]]
     edges.pop(0)
-    # print(edges)
-    for _ in range(4):
-        for k in range(len(ver)):
-            tree.append(ver[k])
-            l=list_of_sets.count(set())
-            l_copy=list_of_sets.count(set())
-            for i in range(len(list_of_sets)):
-                # try:
-                if tree[-1][0] in list_of_sets[i] and tree[-1][1] not in list_of_sets[i]:
-                    for j in range(len(list_of_sets)):
-                        if tree[-1][1] in list_of_sets[j] and i!=j:
-                            list_of_sets[i]=list_of_sets[i].union(list_of_sets[j])
-                            list_of_sets[j]=set()
-                            l=list_of_sets.count(set())
-                            # print(list_of_sets)
-                            # print(ver[k])
-                    
-                # except:
-                #     break
-            if l==l_copy:
-                tree.pop(-1)
-                    
-
+    # print(set_of_vertex )
+    for verx in ver: #comp=m*n^2
+        tree.append(verx)
+        l = list_of_sets.count(set())
+        l_copy = list_of_sets.count(set())
+        for i in range(len(list_of_sets)):
+            if tree[-1][0] in list_of_sets[i] and tree[-1][1] not in list_of_sets[i]:
+                for j in range(len(list_of_sets)):
+                    if tree[-1][1] in list_of_sets[j] and i != j:
+                        list_of_sets[i] = list_of_sets[i].union(
+                            list_of_sets[j])
+                        list_of_sets[j] = set()
+                        l = list_of_sets.count(set())
+                        break
+                break
+        if l == l_copy:
+            tree.pop(-1)
     # print(list_of_sets)
     tree.pop(0)
-
-
-
     # print(list_of_sets)
     return tree
 
 
-
 if __name__ == "__main__":
-    time_taken=0
-    for i in tqdm(range(10)):
+    time_taken = 0
+    for i in tqdm(range(1000)):
         start = time.time()
-        crascal(gnp_random_connected_graph(100,0.5))
+        crascal(gnp_random_connected_graph(100, 1))
         end = time.time()
-        time_taken+=(end-start)
-
+        time_taken += (end-start)
     print(time_taken)
+    print(time_taken/1000)
 
 # print(crascal(gnp_random_connected_graph(7,0.5)))
