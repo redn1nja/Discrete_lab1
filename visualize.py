@@ -1,10 +1,8 @@
 """
 Module visualizing Prim's and Kruskal's minimum spanning tree generation algorithms
 """
-
-
 from prim import generate_mst_prim
-from kruskal import generate_mstp_kruskal
+from kruskal import generate_mst_kruskal
 from graph_gen import gnp_random_connected_graph
 
 import networkx as nx
@@ -31,6 +29,14 @@ def visualize_mstp(G):
     labels = {e[0:2]: e[2] for e in weights}
     nx.draw_networkx_edge_labels(T, pos, edge_labels=labels)
 
+    plt.figure(2)
+    T = generate_mst_kruskal(G)
+    pos = nx.spring_layout(T)
+    nx.draw(T, pos, with_labels=True)
+    weights = [(*data[0:2], data[2]["weight"]) for data in T.edges(data=True)]
+    labels = {e[0:2]: e[2] for e in weights}
+    nx.draw_networkx_edge_labels(T, pos, edge_labels=labels)
+
     plt.figure(3)
     M = minimum_spanning_tree(G)
     pos = nx.spring_layout(M)
@@ -45,8 +51,7 @@ def visualize_mstp(G):
 if __name__ == "__main__":
     G = gnp_random_connected_graph(20, 0.3)
     t = perf_counter()
-    T = generate_mst_prim(G)
+    T = generate_mst_kruskal(G)
     t = perf_counter() - t
     print(t)
     visualize_mstp(G)
-
