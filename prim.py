@@ -1,5 +1,5 @@
 """
-Module implementing Kruskal's algorithm for minimal spanning tree generation
+Module implementing Prim's algorithm for minimum spanning tree generation
 """
 import networkx as nx
 
