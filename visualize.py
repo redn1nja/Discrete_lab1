@@ -2,6 +2,7 @@
 Module visualizing Prim's and Kruskal's minimum
 spanning tree generation algorithms
 """
+from tqdm import tqdm
 from prim import generate_mst_prim
 from kruskal import generate_mst_kruskal
 from graph_gen import gnp_random_connected_graph
@@ -11,7 +12,7 @@ from networkx.algorithms import minimum_spanning_tree
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-from time import perf_counter
+from time import perf_counter_ns
 
 
 def visualize_mstp(G: nx.Graph) -> None:
@@ -58,24 +59,24 @@ def plot_algorithm_comparisons() -> None:
     """
     Plots comparisons of runtimes of three available algorithms.
     """
-    graph_sizes = tuple(range(10, 200, 5))
+    graph_sizes = tuple(range(10, 300, 1))
     print(graph_sizes)
     prim_times = []
     kruskal_times = []
     builtin_times = []
-    for node_num in graph_sizes:
+    for node_num in tqdm(graph_sizes):
         G = gnp_random_connected_graph(node_num, 1)
-        t = perf_counter()
+        t = perf_counter_ns()
         generate_mst_prim(G)
-        prim_times.append(perf_counter() - t)
+        prim_times.append(perf_counter_ns() - t)
 
-        t = perf_counter()
+        t = perf_counter_ns()
         generate_mst_kruskal(G)
-        kruskal_times.append(perf_counter() - t)
+        kruskal_times.append(perf_counter_ns() - t)
 
-        t = perf_counter()
+        t = perf_counter_ns()
         minimum_spanning_tree(G)
-        builtin_times.append(perf_counter() - t)
+        builtin_times.append(perf_counter_ns() - t)
 
     fig, ax = plt.subplots()
     plt.plot(graph_sizes, prim_times, "b-")
@@ -100,4 +101,3 @@ if __name__ == "__main__":
     # print(t)
     # visualize_mstp(G)
     plot_algorithm_comparisons()
-
