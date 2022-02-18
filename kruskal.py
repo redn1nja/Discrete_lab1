@@ -1,41 +1,18 @@
-import random
+"""
+Module implementing Kruskal's algorithm for minimum spanning tree generation
+"""
 import networkx as nx
-from itertools import combinations, groupby
-from tqdm import tqdm
-import time
 
 
-def gnp_random_connected_graph(num_of_nodes: int,
-                               completeness: int) -> list:
+def generate_mst_kruskal(graph: nx.Graph) -> nx.Graph:
     """
-    Generates a random undirected graph, similarly to an Erdős-Rényi 
-    graph, but enforcing that the resulting graph is conneted
+    Generate minimum spanning tree using Kruskal's algorithm
     """
-    weight = []
-    edges = combinations(range(num_of_nodes), 2)
-    G = nx.Graph()
-    G.add_nodes_from(range(num_of_nodes))
-
-    for _, node_edges in groupby(edges, key=lambda x: x[0]):
-        node_edges = list(node_edges)
-        random_edge = random.choice(node_edges)
-        G.add_edge(*random_edge)
-        for e in node_edges:
-            if random.random() < completeness:
-                G.add_edge(*e)
-
-    for (u, v, w) in G.edges(data=True):
-        w['weight'] = random.randint(0, 10)
-        weight.append(w['weight'])
-
-    return G, weight
-
-
-def crascal(graph):
     # edges = graph[0]
-    vertexes = graph[0]
-    weights = graph[1]
-    edges = list(vertexes.edges())
+
+    # vertexes = graph[0]
+    weights = [data[2]["weight"] for data in graph.edges(data=True)]
+    edges = list(graph.edges())
     edges = list(zip(edges, weights))
     # print(edges)
     # set_of_vertex = set()
@@ -45,13 +22,14 @@ def crascal(graph):
     # list_of_sets = []
     # for item in set_of_vertex:
     #     list_of_sets.append({item})
-    list_of_sets=[{i} for i in list(vertexes.nodes())]
+    list_of_sets = [{i} for i in list(graph.nodes())]
     ver = sorted(edges, key=lambda x: x[1])
     # print(edges)
     # ver = [tuple(i[0]) for i in edges]
     # print(ver)
-    tree = [edges[0][0]]
-    ver.pop(0)
+    tree=[]
+    # tree = [edges[0][0]]
+    # ver.pop(0)
     for verx in ver:  # comp=m*n^2 == bad
         tree.append(verx[0])
         l = list_of_sets.count(set())
@@ -75,26 +53,16 @@ def crascal(graph):
                 #         break
         if l == l_copy:
             tree.pop(-1)
+        if len(tree) == (len(list_of_sets)-1):
+            break
         # print(tree)
     # print(list_of_sets)
     # tree.pop(0)
     # print(list_of_sets)
-    return tree
+    result = nx.Graph()
+    result.add_nodes_from(list(graph.nodes()))
+    edge_dict = dict(edges)
+    result.add_edges_from([(*edge, {"weight": edge_dict[edge]}) for edge in tree])
+    return result
 
 
-if __name__ == "__main__":
-    iterations=100
-    time_taken = 0
-    graph=gnp_random_connected_graph(100,1)
-    for _ in tqdm(range(iterations)):
-        start = time.time()
-        crascal(graph)
-        end = time.time()
-        time_taken += (end-start)
-    print(time_taken)
-    # print(len(tree))
-    print(time_taken/iterations)
-
-
-# print(crascal(([(0, 3), (0, 4), (0, 5), (1, 5), (1, 2), (1, 4),
-#       (2, 3), (2, 5), (3, 5), (4, 5)], [1, 4, 3, 8, 10, 7, 5, 9, 2, 15])))
