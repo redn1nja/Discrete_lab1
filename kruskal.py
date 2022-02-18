@@ -58,7 +58,6 @@ def generate_mst_kruskal(graph: nx.Graph) -> nx.Graph:
     # print(list_of_sets)
     result = nx.Graph()
     result.add_nodes_from(list(graph.nodes()))
-    # edge_dict = {edge[0]: edge[1] for edge in edges}
     edge_dict = dict(edges)
     result.add_edges_from([(*edge, {"weight": edge_dict[edge]}) for edge in tree])
     return result
