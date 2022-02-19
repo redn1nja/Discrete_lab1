@@ -68,16 +68,22 @@ def plot_algorithm_comparisons() -> None:
         G = gnp_random_connected_graph(node_num, 1)
 
         t = perf_counter_ns()
-        prim_mst_edges(G)
+        P = prim_mst_edges(G)
         prim_times.append(perf_counter_ns() - t)
 
         t = perf_counter_ns()
-        generate_mst_kruskal(G)
+        K = generate_mst_kruskal(G)
         kruskal_times.append(perf_counter_ns() - t)
 
         t = perf_counter_ns()
-        minimum_spanning_tree(G)
+        B = minimum_spanning_tree(G)
         builtin_times.append(perf_counter_ns() - t)
+
+        P = sum(edge[2]["weight"] for edge in P.edges(data=True))
+        K = sum(edge[2]["weight"] for edge in K.edges(data=True))
+        B = sum(edge[2]["weight"] for edge in B.edges(data=True))
+
+        assert P == K == B
 
     fig, ax = plt.subplots()
     plt.plot(graph_sizes, prim_times, "b-")

@@ -37,7 +37,7 @@ def generate_mst_kruskal(graph: nx.Graph) -> nx.Graph:
             tree.append(verx)
         if len(tree)==(len(list_of_sets)-1):
             break
-    
+
     result = nx.Graph()
     result.add_nodes_from(list(graph.nodes()))
     edge_dict = dict(edges)

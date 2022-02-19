@@ -10,30 +10,29 @@ def generate_mst_prim(graph: nx.Graph) -> nx.Graph:
     Generates the minimum spanning tree for a given graph using Prim algorithm.
     """
     tree = nx.Graph()
-    push = heappush
-    pop = heappop
 
-    nodes = set(graph)
-    tree.add_nodes_from(nodes)
+    tree.add_nodes_from(graph)
 
-    while nodes:
-        u = nodes.pop()
-        frontier = []
-        visited = {u}
-        for v, d in graph.adj[u].items():
-            wt = d.get("weight", 1)
-            push(frontier, (wt, u, v, d))
-        while frontier:
-            W, u, v, d = pop(frontier)
-            if v in visited or v not in nodes:
+    u = 0
+    visited_nodes = {u}
+    incidental_nodes = []
+
+    for v, data in graph.adj[u].items():
+        heappush(incidental_nodes, (data["weight"], u, v))
+
+    while incidental_nodes:
+        weight, u, v = heappop(incidental_nodes)
+
+        if v in visited_nodes:
+            continue
+
+        tree.add_edge(u, v, weight=weight)
+
+        visited_nodes.add(v)
+
+        for w, data in graph.adj[v].items():
+            if w in visited_nodes:
                 continue
-            tree.add_edge(u, v, weight=W)
-            visited.add(v)
-            nodes.discard(v)
-            for w, d2 in graph.adj[v].items():
-                if w in visited:
-                    continue
-                new_weight = d2.get("weight", 1)
-                push(frontier, (new_weight, v, w, d2))
+            heappush(incidental_nodes, (data["weight"], v, w))
 
     return tree
