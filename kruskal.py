@@ -17,7 +17,7 @@ def generate_mst_kruskal(graph: nx.Graph) -> nx.Graph:
     list_of_sets=[{i} for i in list(graph.nodes())]
     # print(list_of_sets)
     ver = dict(sorted(edges.items(), key = lambda x: x[1]))
-    print(ver)
+    # print(ver)
     tree=[]
     # list_of_sets_2=list_of_sets
     # print(ver)
