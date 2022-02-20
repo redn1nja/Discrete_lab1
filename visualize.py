@@ -13,7 +13,7 @@ from networkx.algorithms import minimum_spanning_tree
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-from time import perf_counter_ns, perf_counter
+from time import perf_counter
 
 
 def visualize_mstp(G: nx.Graph) -> None:
@@ -56,28 +56,28 @@ def visualize_mstp(G: nx.Graph) -> None:
     plt.show()
 
 
-def plot_algorithm_comparisons() -> None:
+def plot_algorithm_comparisons(start, stop, step, graph_completeness) -> None:
     """
     Plots comparisons of runtimes of three available algorithms.
     """
-    graph_sizes = tuple(range(10, 300, 1))
+    graph_sizes = tuple(range(start, stop, step))
     prim_times = []
     kruskal_times = []
     builtin_times = []
     for node_num in tqdm(graph_sizes):
-        G = gnp_random_connected_graph(node_num, 1)
+        G = gnp_random_connected_graph(node_num, graph_completeness)
 
-        t = perf_counter_ns()
+        t = perf_counter()
         P = prim_mst_edges(G)
-        prim_times.append(perf_counter_ns() - t)
+        prim_times.append(perf_counter() - t)
 
-        t = perf_counter_ns()
+        t = perf_counter()
         K = generate_mst_kruskal(G)
-        kruskal_times.append(perf_counter_ns() - t)
+        kruskal_times.append(perf_counter() - t)
 
-        t = perf_counter_ns()
+        t = perf_counter()
         B = minimum_spanning_tree(G)
-        builtin_times.append(perf_counter_ns() - t)
+        builtin_times.append(perf_counter() - t)
 
         P = sum(edge[2]["weight"] for edge in P.edges(data=True))
         K = sum(edge[2]["weight"] for edge in K.edges(data=True))
@@ -86,13 +86,19 @@ def plot_algorithm_comparisons() -> None:
         assert P == K == B
 
     fig, ax = plt.subplots()
+
     plt.plot(graph_sizes, prim_times, "b-")
     prim_patch = mpatches.Patch(color='blue', label='Prim')
+
     plt.plot(graph_sizes, kruskal_times, "r-")
     kruskal_patch = mpatches.Patch(color='red', label='Kruskal')
+
     plt.plot(graph_sizes, builtin_times, "g-")
     builtin_patch = mpatches.Patch(color="green", label="Builtin")
-    ax.legend(handles=[prim_patch, kruskal_patch, builtin_patch])
+
+    completeness_patch = mpatches.Patch(label=f"Graph completenss: {graph_completeness}")
+
+    ax.legend(handles=[prim_patch, kruskal_patch, builtin_patch, completeness_patch])
 
     plt.xlabel("Number of graph nodes")
     plt.ylabel("Execution time, secs")
@@ -107,4 +113,6 @@ if __name__ == "__main__":
     # t = perf_counter() - t
     # print(t)
     visualize_mstp(G)
-    plot_algorithm_comparisons()
+    plot_algorithm_comparisons(1, 1000, 10, 0.2)
+    # plot_algorithm_comparisons(1, 1000, 10, 0.5)
+    # plot_algorithm_comparisons(1, 1000, 10, 1)
