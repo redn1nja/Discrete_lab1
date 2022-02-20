@@ -32,7 +32,7 @@ def visualize_mstp(G: nx.Graph) -> None:
     plt.figure(2)
     P = generate_mst_prim(G)
     pos = nx.spring_layout(P)
-    nx.draw(P, pos, with_labels=False)
+    nx.draw(P, pos, with_labels=True)
     weights = dict([(data[0:2], data[2]["weight"]) for data in P.edges(data=True)])
     print(f"Prim total weight: {sum(list(weights.values()))}")
     nx.draw_networkx_edge_labels(P, pos, edge_labels=weights)
@@ -107,12 +107,12 @@ def plot_algorithm_comparisons(start, stop, step, graph_completeness) -> None:
 
 
 if __name__ == "__main__":
-    G = gnp_random_connected_graph(8, 0.5)
+    # G = gnp_random_connected_graph(8, 0.5)
     # t = perf_counter()
     # T = prim_mst_edges(G)
     # t = perf_counter() - t
     # print(t)
-    visualize_mstp(G)
+    # visualize_mstp(G)
     plot_algorithm_comparisons(1, 1000, 10, 0.2)
-    # plot_algorithm_comparisons(1, 1000, 10, 0.5)
-    # plot_algorithm_comparisons(1, 1000, 10, 1)
+    plot_algorithm_comparisons(1, 1000, 10, 0.5)
+    plot_algorithm_comparisons(1, 1000, 10, 1)
