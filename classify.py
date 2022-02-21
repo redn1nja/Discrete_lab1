@@ -1,9 +1,10 @@
 from sklearn.datasets import load_iris
-from functools import wraps
 import numpy as np
 iris = load_iris()
 
 call_list = []
+
+
 def trace(func):
     def traced_func(*args, **kwargs):
         result = func(*args, **kwargs)
@@ -16,16 +17,15 @@ def trace(func):
 
 
 class Node:
-    def __init__(self, X, y):  # тут ще було gini, забрав бо хз як в рекурсію нормаьно її додавати
+    def __init__(self, X, y):
         self.X = X
         self.y = y
-        self.gini = 0  # self.gini = gini
+        self.gini = 0
         self.feature_index = 0
         self.threshold = 0
         self.left = None
         self.right = None
         self.depth = 0
-        # self.leaf = False # додав атрибут з листками, тому що він грубо говоря, надо, хз що передавати в нього якщо чесно
 
     def __str__(self) -> str:
         return f"Node containing {len(self.X)} irises of type {np.unique(self.y)} @ depth {self.depth}"
@@ -39,13 +39,11 @@ class Leaf(Node):
 class MyDecisionTreeClassifier:
 
     def __init__(self, max_depth):
-        self.max_depth = max_depth  # height of a tree
+        self.max_depth = max_depth
         self.json_view = []
+        self.root = None
 
-    def split_data(self, dataset):  # x -- dataset y -- target (0,1,2)
-        # ця фція паше харашо, перебором но харашо, так і треба, можеш в принципі якщо щось якось розібратись.
-        # test all the possible splits in O(N^2)S
-        # return index and threshold value
+    def split_data(self, dataset):
         best_split = {}
         maximum = 1
         amount = np.shape(X)[1]
@@ -70,7 +68,6 @@ class MyDecisionTreeClassifier:
                         best_split['data'] = data
         return best_split
 
-    # ця фція паше хорошо, просто обраховує велью за формулою, по якому ми потім визначаєм шо нам підходе
 
     def gini(self, y, left_y, right_y):
         '''
@@ -94,17 +91,7 @@ class MyDecisionTreeClassifier:
         gain = gini-(left_w*gini_left + right_w*gini_right)
         return gain
 
-    def build_tree(self, dataset, depth=0):  # гігантська рекурсія яка поки що (вже)
-        # паше але чот ретурнить тільки нани, тому що треба бавитись з обжектами класу а я пока хз як тут зробити шоб воно пахало.
-        # надіюсь в тебе вийде.
-        # може треба подумати як створити корінь перед тим як рекурсивно ходити.
-
-        # create a root node
-
-        # recursively split until max depth is not exeeced
-
-        # rows, columns = np.shape(X)
-        # if depth < self.max_depth:
+    def build_tree(self, dataset, depth=0):
         left_tree = None
         right_tree = None
         split = self.split_data(dataset)
@@ -121,6 +108,9 @@ class MyDecisionTreeClassifier:
         else:
             node = Leaf(dataset[:, :-1], dataset[:, -1])
             node.depth = depth
+
+        if depth == 0:
+            self.root = node
         return node
 
     def fit(self, X, y):
@@ -133,17 +123,25 @@ class MyDecisionTreeClassifier:
         print("\n".join(str(node) for node in sorted(call_list, key=lambda x: int(str(x).split()[-1]))))
         return nodes
 
+    def traverse(self, value, node=None) -> bool:
+        if node is None:
+            node = self.root
+        if node.threshold:
+            if value[node.feature_index] <= node.threshold:
+                return self.traverse(value, node=node.left)
+            else:
+                return self.traverse(value, node=node.right)
+        elif value[-1] in node.y:
+            return True
+        else:
+            return False
 
-
-    # ходити по всім тресхолдам (split['value']) і перевіряти в яку гілку попадає новий елемент + повертати 0 1 чи 2 (тип квіки)
     def predict(self, X_test):
+        tests = []
+        for entry in X_test:
+            tests.append(int(self.traverse(entry)))
 
-        # traverse the tree while there is left node
-        # and return the predicted class for it,
-        # note that X_test can be not only one example
-
-
-        pass
+        return 100*sum(tests)/len(tests)
 
 
 if __name__ == '__main__':
@@ -151,3 +149,8 @@ if __name__ == '__main__':
     y = iris.target
     tree = MyDecisionTreeClassifier(100)
     nodes = tree.fit(X, y)
+    y = np.array([[i] for i in y])
+    dataset = np.append(X, y, axis=1)
+    np.random.shuffle(dataset)
+    dataset = dataset[:50]
+    print(f"Good prediction percentage {tree.predict(dataset)}%")
